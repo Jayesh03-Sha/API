@@ -7,6 +7,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
 import logging
+from django.http import HttpResponse
+from .services.pdf_service import PDFService
 
 from .serializers import (
     RegisterSerializer,
