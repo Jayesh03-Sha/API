@@ -1,0 +1,37 @@
+<ProviderResponse>
+    <ProviderName>QIC Qatar Insurance UAE</ProviderName>
+    <Plans>
+        <Plan>
+            <Name>QIC Motor Renewal - NISSAN PATHFINDER</Name>
+            <Premium>1150.0</Premium>
+            <Coverage>72000.0</Coverage>
+            <Benefits>
+                <Benefit>Agency Repair (3 years)</Benefit>
+                <Benefit>Replacement Car</Benefit>
+                <Benefit>Personal Accident Cover</Benefit>
+            </Benefits>
+            <WaitingPeriod>0</WaitingPeriod>
+        </Plan>
+        <Plan>
+            <Name>QIC Motor Renewal - TOYOTA LAND CRUISER</Name>
+            <Premium>880.0</Premium>
+            <Coverage>8500.0</Coverage>
+            <Benefits>
+                <Benefit>Third Party Liability</Benefit>
+                <Benefit>Roadside Assistance (GCC)</Benefit>
+            </Benefits>
+            <WaitingPeriod>0</WaitingPeriod>
+        </Plan>
+        <Plan>
+            <Name>QIC Motor Renewal - MERCEDES G63</Name>
+            <Premium>2750.0</Premium>
+            <Coverage>170000.0</Coverage>
+            <Benefits>
+                <Benefit>Full GCC Coverage</Benefit>
+                <Benefit>Off-road Coverage</Benefit>
+                <Benefit>Replacement Car (10 days)</Benefit>
+            </Benefits>
+            <WaitingPeriod>0</WaitingPeriod>
+        </Plan>
+    </Plans>
+</ProviderResponse>

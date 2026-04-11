@@ -1,0 +1,36 @@
+<ProviderResponse>
+    <ProviderName>DIC Insurance Broker UAE</ProviderName>
+    <Plans>
+        <Plan>
+            <Name>DIC Motor Renewal - NISSAN PATHFINDER</Name>
+            <Premium>1050.0</Premium>
+            <Coverage>68000.0</Coverage>
+            <Benefits>
+                <Benefit>Agency Repair</Benefit>
+                <Benefit>Replacement Car</Benefit>
+            </Benefits>
+            <WaitingPeriod>0</WaitingPeriod>
+        </Plan>
+        <Plan>
+            <Name>DIC Motor Renewal - TOYOTA LAND CRUISER</Name>
+            <Premium>840.0</Premium>
+            <Coverage>7500.0</Coverage>
+            <Benefits>
+                <Benefit>Third Party Liability</Benefit>
+                <Benefit>Roadside Assistance</Benefit>
+            </Benefits>
+            <WaitingPeriod>0</WaitingPeriod>
+        </Plan>
+        <Plan>
+            <Name>DIC Motor Renewal - MERCEDES G63</Name>
+            <Premium>2500.0</Premium>
+            <Coverage>150000.0</Coverage>
+            <Benefits>
+                <Benefit>GCC Coverage</Benefit>
+                <Benefit>Off-road Coverage</Benefit>
+                <Benefit>Personal Accident Cover</Benefit>
+            </Benefits>
+            <WaitingPeriod>0</WaitingPeriod>
+        </Plan>
+    </Plans>
+</ProviderResponse>

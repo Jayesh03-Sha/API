@@ -1,0 +1,84 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">
+<style>
+    .comparison-container { padding: 20px; }
+    .matrix-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+    .matrix-table th, .matrix-table td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+    .matrix-table th { background: #f4f4f4; color: #333; }
+    .best-row { background: #e8f5e9; font-weight: bold; }
+    .premium { color: #2e7d32; font-size: 1.2em; }
+    .score-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; background: #007bff; color: white; font-weight: bold; }
+    .benefit-item { margin-bottom: 5px; font-size: 0.9em; }
+    .verdict-box { margin-top: 30px; padding: 20px; border-left: 5px solid #007bff; background: #f0f7ff; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="comparison-container">
+    <h1>Comparison Matrix for Request #{{ object.id }}</h1>
+    <p><strong>Customer:</strong> {{ object.user.username }} | <strong>Type:</strong> {{ object.get_insurance_type_display }}</p>
+    
+    <table class="matrix-table">
+        <thead>
+            <tr>
+                <th>Detail</th>
+                {% for quote in quotes %}
+                <th {% if quote.is_best %}class="best-row"{% endif %}>
+                    {{ quote.provider|upper }} 
+                    {% if quote.is_best %}(BEST CHOICE){% endif %}
+                </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Premium</strong></td>
+                {% for quote in quotes %}
+                <td class="premium">{{ quote.premium }} AED</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td><strong>Coverage</strong></td>
+                {% for quote in quotes %}
+                <td>{{ quote.coverage }} AED</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td><strong>Benefits</strong></td>
+                {% for quote in quotes %}
+                <td>
+                    {% for benefit in quote.benefits %}
+                    <div class="benefit-item">• {{ benefit }}</div>
+                    {% endfor %}
+                </td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td><strong>Score</strong></td>
+                {% for quote in quotes %}
+                <td><span class="score-badge">{{ quote.comparison_score }}/100</span></td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td><strong>Advantages</strong></td>
+                {% for quote in quotes %}
+                <td>{{ quote.competitive_advantages|join:", " }}</td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="verdict-box">
+        <h3>Expert Verdict</h3>
+        <p>{{ quotes.0.verdict }}</p>
+    </div>
+    
+    <div class="submit-row">
+        <a href="../" class="closelink">Back to Quote Request</a>
+    </div>
+</div>
+{% endblock %}

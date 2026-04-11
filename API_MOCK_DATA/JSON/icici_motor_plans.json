@@ -1,0 +1,31 @@
+{
+  "provider": "ICICI UAE",
+  "plans": [
+    {
+      "plan_name": "ICICI Motor - Toyota Land Cruiser",
+      "premium": 2100.0,
+      "coverage": 75000.0,
+      "benefits": ["GCC Cover", "24/7 Recovery Service", "New Car Replacement"],
+      "details": {
+        "make": "TOYOTA",
+        "model": "LAND CRUISER",
+        "year": 2023,
+        "plate": "DUBAI K 3639",
+        "colour": "WHITE PEARL"
+      }
+    },
+    {
+      "plan_name": "ICICI Motor - Suzuki Ertiga",
+      "premium": 1200.0,
+      "coverage": 68700.0,
+      "benefits": ["Third Party Liability", "Personal Accident Cover"],
+      "details": {
+        "make": "SUZUKI",
+        "model": "ERTIGA",
+        "year": 2023,
+        "plate": "SHARJAH 1 51882",
+        "colour": "BLUE"
+      }
+    }
+  ]
+}

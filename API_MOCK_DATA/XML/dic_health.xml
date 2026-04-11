@@ -1,0 +1,37 @@
+<ProviderResponse>
+    <ProviderName>DIC Insurance Broker UAE</ProviderName>
+    <Plans>
+        <Plan>
+            <Name>DIC Basic Care</Name>
+            <Premium>1200.0</Premium>
+            <Coverage>250000.0</Coverage>
+            <Benefits>
+                <Benefit>Basic Hospitalization</Benefit>
+                <Benefit>Emergency Care</Benefit>
+            </Benefits>
+            <WaitingPeriod>30</WaitingPeriod>
+        </Plan>
+        <Plan>
+            <Name>DIC Silver Shield</Name>
+            <Premium>2500.0</Premium>
+            <Coverage>500000.0</Coverage>
+            <Benefits>
+                <Benefit>OPD Coverage</Benefit>
+                <Benefit>Dental Care</Benefit>
+                <Benefit>Cashless Hospitals</Benefit>
+            </Benefits>
+            <WaitingPeriod>15</WaitingPeriod>
+        </Plan>
+        <Plan>
+            <Name>DIC Gold Plus</Name>
+            <Premium>4500.0</Premium>
+            <Coverage>1000000.0</Coverage>
+            <Benefits>
+                <Benefit>Global Coverage</Benefit>
+                <Benefit>Maternity</Benefit>
+                <Benefit>Critical Illness</Benefit>
+            </Benefits>
+            <WaitingPeriod>0</WaitingPeriod>
+        </Plan>
+    </Plans>
+</ProviderResponse>

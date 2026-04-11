@@ -1,0 +1,18 @@
+{
+  "provider": "QIC Insurance UAE",
+  "plans": [
+    {
+      "plan_name": "QIC Motor - Honda CRV",
+      "premium": 1550.0,
+      "coverage": 55000.0,
+      "benefits": ["Rent-a-car (7 days)", "Windshield Damage", "Valet Parking Cover"],
+      "details": {
+        "make": "HONDA",
+        "model": "CRV",
+        "year": 2018,
+        "plate": "DUBAI V 23855",
+        "colour": "RED"
+      }
+    }
+  ]
+}
