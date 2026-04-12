@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promise Insurance Services | Premium Protection</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'ui/css/portal.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container nav-wrapper">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i> PROMISE<span>INSURE</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" class="active">Home</a></li>
+                <li><a href="#">Health</a></li>
+                <li><a href="#">Motor</a></li>
+                <li><a href="#">Travel</a></li>
+                <li><a href="/admin/">Staff Portal</a></li>
+            </ul>
+            <a href="/portal/quote/" class="btn btn-primary">Get Quote</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content fade-in">
+                    <h1>Intelligent Insurance for the Modern Era.</h1>
+                    <p>Experience the ultimate comparison engine. We fetch real-time quotes from top providers and use advanced AI to find your perfect match in seconds.</p>
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="/portal/quote/" class="btn btn-primary">Compare Plans Now</a>
+                        <a href="#how-it-works" class="btn btn-outline">How it Works</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works" style="padding: 100px 0;">
+            <div class="container">
+                <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 4rem;">Why Choose Promise?</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                    <div class="glass-card">
+                        <i class="fas fa-bolt" style="font-size: 2rem; color: var(--accent-gold); margin-bottom: 1.5rem;"></i>
+                        <h3>Instant Comparison</h3>
+                        <p>Our Direct API integration with QIC, DIC, and AXA ensures you get quotes instantly without waiting.</p>
+                    </div>
+                    <div class="glass-card">
+                        <i class="fas fa-chart-line" style="font-size: 2rem; color: var(--accent-gold); margin-bottom: 1.5rem;"></i>
+                        <h3>Smart Scoring</h3>
+                        <p>We don't just show prices. Our algorithm scores policies on 5 key metrics to find the absolute best value.</p>
+                    </div>
+                    <div class="glass-card">
+                        <i class="fas fa-file-pdf" style="font-size: 2rem; color: var(--accent-gold); margin-bottom: 1.5rem;"></i>
+                        <h3>Full Documentation</h3>
+                        <p>Once selected, download your Quote PDF and start your policy in minutes with zero paperwork.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer style="padding: 50px 0; border-top: 1px solid var(--glass-border); text-align: center; color: var(--text-slate);">
+        <p>&copy; 2026 Promise Insurance Services Ltd. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

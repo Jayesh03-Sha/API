@@ -12,4 +12,9 @@ urlpatterns = [
     path('dashboard/transactions/<int:txn_id>/', views.transaction_detail, name='transaction_detail'),
     path('dashboard/customers/', views.customers_list, name='customers_list'),
     path('dashboard/quotes/<int:quote_request_id>/proposal/', views.quote_proposal, name='quote_proposal'),
+    
+    # Public Portal URLs
+    path('portal/', views.portal_index, name='portal_index'),
+    path('portal/quote/', views.portal_quote_request, name='portal_quote_request'),
+    path('portal/comparison/<int:quote_request_id>/', views.portal_comparison, name='portal_comparison'),
 ]

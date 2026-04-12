@@ -224,3 +224,40 @@ def quote_proposal(request, quote_request_id):
     }
     
     return render(request, 'ui/proposal.html', context)
+
+
+# --- Public Portal Views ---
+
+def portal_index(request):
+    """Public landing page for Promise Insurance"""
+    return render(request, 'ui/portal_index.html')
+
+
+@login_required
+def portal_quote_request(request):
+    """Step 1: Multi-step quote request form"""
+    return render(request, 'ui/portal_quote_request.html')
+
+
+@login_required
+def portal_comparison(request, quote_request_id):
+    """Step 2: Comparison results matrix"""
+    quote_request = get_object_or_404(QuoteRequest, pk=quote_request_id, user=request.user)
+    quotes = quote_request.quotes.all().order_by('-comparison_score')
+    best_quote = quotes.filter(is_best=True).first()
+    
+    # Calculate some summary stats
+    avg_premium = quotes.aggregate(avg=Sum('premium'))['avg'] or 0
+    if quotes.count() > 0:
+        avg_premium = avg_premium / quotes.count()
+        
+    context = {
+        'quote_request': quote_request,
+        'all_quotes': quotes,
+        'best_quote': best_quote,
+        'summary': {
+            'avg_premium': avg_premium,
+            'count': quotes.count()
+        }
+    }
+    return render(request, 'ui/portal_comparison.html', context)

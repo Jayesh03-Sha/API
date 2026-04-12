@@ -2,7 +2,7 @@
 
 This document provides a comprehensive list of all API endpoints available in the **Promise Insurance Services** project.
 
-## 🔑 Authentication Endpoints
+## Authentication Endpoints
 All authentication endpoints are prefixed with `/api/auth/`.
 
 | Method | Endpoint | Description | Auth Required |
@@ -14,16 +14,16 @@ All authentication endpoints are prefixed with `/api/auth/`.
 | `POST` | `/api/auth/change-password/` | Update user password | **Yes (JWT)** |
 | `POST` | `/api/auth/logout/` | Blacklist refresh token and logout | **Yes (JWT)** |
 
-## 📋 Insurance Quotation Endpoints
+## Insurance Quotation Endpoints
 All quotation endpoints are prefixed with `/api/quotes/`.
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `POST` | `/api/quotes/get-quotes/` | **Main Engine**: Fetch parallel quotes & compare | **Yes (JWT)** |
+| `POST` | `/api/quotes/get-quotes/` | **Main Engine**: Fetch parallelquotes&compare| **Yes (JWT)** |
 | `GET`  | `/api/quotes/history/` | View user's quote request history | **Yes (JWT)** |
 | `GET`  | `/api/quotes/<id>/` | View specific quote details and scores | **Yes (JWT)** |
 
-## 🛠️ Administrative
+## Administrative
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
 | `ANY`  | `/admin/` | Django Administrative Interface | Yes (Staff) |

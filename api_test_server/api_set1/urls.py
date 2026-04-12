@@ -10,7 +10,8 @@ from .views import (
     QuoteHistoryView,
     QuoteDetailView,
     SelectSchemeView,
-    GetPolicyView
+    GetPolicyView,
+    DownloadQuotePDFView
 )
 
 app_name = 'api_set1'

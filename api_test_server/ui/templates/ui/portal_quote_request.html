@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Quote | Promise Insurance</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'ui/css/portal.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body style="background: radial-gradient(circle at top left, var(--secondary-navy), var(--bg-dark));">
+    <header>
+        <div class="container nav-wrapper">
+            <div class="logo">
+                <a href="/portal/" style="text-decoration: none; color: inherit;">
+                    <i class="fas fa-shield-alt"></i> PROMISE<span>INSURE</span>
+                </a>
+            </div>
+            <a href="/portal/" class="btn btn-outline" style="padding: 0.5rem 1.5rem; font-size: 0.8rem;">Back Home</a>
+        </div>
+    </header>
+
+    <main style="padding-top: 151px; padding-bottom: 74px;">
+        <div class="container" style="max-width: 801px;">
+            <div class="glass-card fade-in">
+                <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Get Your Custom Quote</h2>
+                <p style="color: var(--text-slate); margin-bottom: 2rem;">Help us understand your needs. Our engine will query multiple providers instantly.</p>
+
+                <form id="quoteForm">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="form-group">
+                            <label for="insurance_type">Insurance Type</label>
+                            <select id="insurance_type" name="insurance_type" required>
+                                <option value="health">Health Insurance</option>
+                                <option value="motor">Motor Insurance</option>
+                                <option value="travel">Travel Insurance</option>
+                                <option value="home">Home Insurance</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="city">City / Emirate</label>
+                            <select id="city" name="city" required>
+                                <option value="Dubai">Dubai</option>
+                                <option value="Abu Dhabi">Abu Dhabi</option>
+                                <option value="Sharjah">Sharjah</option>
+                                <option value="Ajman">Ajman</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="form-group">
+                            <label for="age">Primary Member Age</label>
+                            <input type="number" id="age" name="age" placeholder="e.g. 30" required min="18" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="members">Total Members</label>
+                            <input type="number" id="members" name="members" value="1" required min="1" max="10">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sum_insured">Required Sum Insured (AED)</label>
+                        <select id="sum_insured" name="sum_insured" required>
+                            <option value="100000">100,000 AED</option>
+                            <option value="250000">250,000 AED</option>
+                            <option value="500000">500,000 AED</option>
+                            <option value="1000000">1,000,000 AED</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <button type="submit" class="btn btn-primary" style="width: 100%; border-radius: 12px; height: 55px;">
+                            <span id="btnText">Compare Plans</span>
+                            <i id="btnIcon" class="fas fa-arrow-right" style="margin-left: 10px;"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <div id="loader" style="display: none; position: fixed; inset: 0px; background: rgba(0, 18, 38, 0.9); z-index: 2000; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="width: 60px; height: 60px; border: 5px solid rgba(197, 160, 89, 0.2); border-top-color: var(--accent-gold); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <p style="margin-top: 2rem; font-size: 1.2rem; font-family: 'Outfit'; letter-spacing: 1px;">AGGREGATING REAL-TIME QUOTES...</p>
+        <p id="loaderStatus" style="color: var(--text-slate); margin-top: 0.5rem; font-size: 0.9rem;">Querying QIC, DIC, and AXA...</p>
+    </div>
+
+    <style>
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+
+    <script>
+        document.getElementById('quoteForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const loader = document.getElementById('loader');
+            const btnText = document.getElementById('btnText');
+            loader.style.display = 'flex';
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            try {
+                // Get JWT token from local storage or cookie if applicable
+                // For this demo, we assume the user is logged in via Django session
+                const response = await axios.post('/api/quotes/get-quotes/', data, {
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                });
+                
+                if (response.data && response.data.quotes) {
+                    // Store request ID in session/URL
+                    const requestId = response.data.quotes[0].quote_request;
+                    window.location.href = `/portal/comparison/${requestId}/`;
+                }
+            } catch (error) {
+                console.error('Error fetching quotes:', error);
+                alert('Connection to providers failed. Please try again.');
+                loader.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

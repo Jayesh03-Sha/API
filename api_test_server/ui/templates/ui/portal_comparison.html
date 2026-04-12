@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare Plans | Promise Insurance</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'ui/css/portal.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body style="background-color: var(--bg-dark);">
+    <header>
+        <div class="container nav-wrapper">
+            <div class="logo">
+                <a href="/portal/" style="text-decoration: none; color: inherit;">
+                    <i class="fas fa-shield-alt"></i> PROMISE<span>INSURE</span>
+                </a>
+            </div>
+            <div class="step-indicator" style="display: flex; gap: 2rem; color: var(--text-slate); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">
+                <span style="color: var(--text-white);"><i class="fas fa-check-circle" style="color: var(--accent-gold);"></i> Details</span>
+                <span style="color: var(--text-white); font-weight: 600; border-bottom: 2px solid var(--accent-gold);">02 Comparison</span>
+                <span>03 Selection</span>
+            </div>
+            <a href="/portal/quote/" class="btn btn-outline" style="padding: 0.5rem 1.5rem; font-size: 0.8rem;">New Search</a>
+        </div>
+    </header>
+
+    <main style="padding-top: 151px; padding-bottom: 74px;">
+        <div class="container">
+            <div style="margin-bottom: 3rem; display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Recommended Plans for You</h1>
+                    <p style="color: var(--text-slate);">Based on {{ quote_request.get_insurance_type_display }} for {{ quote_request.age }} years old in {{ quote_request.city }}.</p>
+                </div>
+                <div class="glass-card" style="padding: 1rem 2rem; border-radius: 15px;">
+                    <span style="display: block; font-size: 0.8rem; color: var(--text-slate);">Market Avg. Premium</span>
+                    <span style="font-size: 1.5rem; font-family: 'Outfit'; color: var(--accent-gold);">AED {{ summary.avg_premium|floatformat:0 }}</span>
+                </div>
+            </div>
+
+            {% if best_quote %}
+            <!-- Top Recommendation -->
+            <div class="glass-card fade-in" style="margin-bottom: 4rem; border: 1px solid var(--accent-gold); position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; right: 0; background: var(--accent-gold); color: var(--primary-navy); padding: 0.5rem 2rem; font-weight: 700; font-family: 'Outfit'; border-bottom-left-radius: 20px;">
+                    BEST OVERALL VALUE
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 200px 1fr 250px; gap: 3rem; align-items: center;">
+                    <div style="text-align: center;">
+                        <div style="width: 101px; height: 101px; background: rgba(255,255,255,0.05); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                            <i class="fas fa-building" style="font-size: 2.5rem; color: var(--accent-gold);"></i>
+                        </div>
+                        <h3 style="font-size: 1.2rem;">{{ best_quote.get_provider_display }}</h3>
+                    </div>
+                    
+                    <div>
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                            {% for advantage in best_quote.competitive_advantages %}
+                            <span style="background: rgba(197, 160, 89, 0.1); color: var(--accent-gold); padding: 0.3rem 0.8rem; border-radius: 5px; font-size: 0.8rem; font-weight: 500;">
+                                <i class="fas fa-star" style="margin-right: 5px;"></i> {{ advantage }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                        <p style="font-size: 1.1rem; border-left: 3px solid var(--accent-gold); padding-left: 1rem; color: var(--text-ivory);">
+                            {{ best_quote.verdict }}
+                        </p>
+                        <div style="margin-top: 1.5rem; display: flex; gap: 2rem;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-slate);">
+                                <i class="fas fa-shield-alt" style="color: var(--accent-gold);"></i> Score: {{ best_quote.comparison_score }}%
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-slate);">
+                                <i class="fas fa-hospital" style="color: var(--accent-gold);"></i> Large Network
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: right; border-left: 1px solid var(--glass-border); padding-left: 2rem;">
+                        <span style="display: block; color: var(--text-slate); font-size: 0.9rem;">Annual Premium</span>
+                        <h2 style="font-size: 2.5rem; color: var(--text-white); font-family: 'Outfit';">AED {{ best_quote.premium|floatformat:0 }}</h2>
+                        <a href="/portal/select/{{ best_quote.id }}/" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;">Select Plan</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <h2 style="margin-bottom: 2rem; font-size: 1.8rem;">Other Available Plans</h2>
+            
+            <div class="glass-card" style="padding: 0;">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Coverage</th>
+                            <th>Price Score</th>
+                            <th>Premium</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for quote in all_quotes %}
+                        {% if not quote.is_best %}
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <i class="fas fa-building" style="color: var(--text-slate);"></i>
+                                    <span style="font-weight: 500;">{{ quote.get_provider_display }}</span>
+                                </div>
+                            </td>
+                            <td style="color: var(--text-slate);">AED {{ quote.coverage|floatformat:0 }}</td>
+                            <td>
+                                <div style="width: 100px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+                                    <div style="width: {{ quote.scoring_breakdown.price_score }}%; height: 100%; background: var(--accent-gold);"></div>
+                                </div>
+                            </td>
+                            <td><span style="font-family: 'Outfit'; font-weight: 600; font-size: 1.1rem;">AED {{ quote.premium|floatformat:0 }}</span></td>
+                            <td>
+                                <a href="/portal/select/{{ quote.id }}/" class="btn btn-outline" style="padding: 0.4rem 1.2rem; font-size: 0.8rem;">View Details</a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer style="padding: 50px 0; text-align: center; color: var(--text-slate);">
+        <p>&copy; 2026 Promise Insurance Services Ltd. All rights reserved.</p>
+    </footer>
+</body>
+</html>
