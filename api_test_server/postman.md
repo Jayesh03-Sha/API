@@ -30,7 +30,7 @@ This guide describes how to test the unified 5-step flow for motor insurance pro
 
 **Endpoint:** `POST /api/set1/quotes/get-quotes/`
 
-**Description:** Submits customer & vehicle data. The system automatically fetches quotations from multiple integrated providers (NIA, DIC, etc.) and compares them.
+**Description:** Submits customer & vehicle data. The system automatically fetches quotations from DIC and QIC and compares them.
 
 **Header:** `Authorization: Bearer <your_access_token>`
 

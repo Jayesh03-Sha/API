@@ -408,19 +408,7 @@ class SelectSchemeView(APIView):
         ref_no = quote.provider_metadata.get('reference_no')
         prod_code = quote.provider_metadata.get('prod_code')
         
-        if provider_id == 'nia_online':
-            covers = request.data.get('covers', [])
-            result = provider_instance.save_quote_with_plan(ref_no, prod_code, covers)
-            if result:
-                provider_instance.save_additional_info({"ReferenceNo": ref_no})
-                summary = provider_instance.get_proposal_summary(ref_no)
-                return Response({
-                    "message": "Scheme selected successfully",
-                    "quotation_no": result,
-                    "summary": summary,
-                    "payment_url": f"https://mock-payment-gateway.com/pay/{result}"
-                })
-        elif provider_id == 'dic_broker_uae':
+        if provider_id == 'dic_broker_uae':
             covers = request.data.get('covers', {})
             result = provider_instance.choose_scheme(prod_code, covers)
             if result:
@@ -451,15 +439,7 @@ class GetPolicyView(APIView):
         ref_no = quote.provider_metadata.get('reference_no')
         quotation_no = request.data.get('quotation_no', '')
 
-        if provider_id == 'nia_online':
-            policy_no = provider_instance.approve_policy(ref_no)
-            if policy_no:
-                return Response({
-                    "message": "Policy generated successfully",
-                    "policy_no": policy_no,
-                    "status": "Active"
-                })
-        elif provider_id == 'dic_broker_uae':
+        if provider_id == 'dic_broker_uae':
             policy_info = provider_instance.get_policy(quotation_no)
             if policy_info:
                 return Response({

@@ -112,7 +112,7 @@ This document contains all the endpoints, example payloads, and instructions for
 }
 ```
 
-### 🚗 Scenario E: Toyota Land Cruiser (ICICI)
+### 🚗 Scenario E: Toyota Land Cruiser (QIC)
 - **Endpoint**: `POST /get-quotes/`
 - **Auth**: Bearer Token
 - **Payload**:
@@ -149,7 +149,6 @@ This document contains all the endpoints, example payloads, and instructions for
 *These are the internal mock endpoints the backend calls. You can test them directly too.*
 
 - **DIC**: `POST /mock-api/dic-broker-uae/quotes/`
-- **ICICI**: `POST /mock-api/icici-uae/quotes/`
 - **QIC**: `POST /mock-api/qic-uae/quotes/`
 
 ---

@@ -20,7 +20,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import QuoteRequest, Quote, UserProfile, InsuranceProvider
 from .services.providers.DIC import DICProvider
-from .services.providers.NID import NIAProvider
 from .services.providers.QIC import QICProvider
 from .services.aggregator import QuoteAggregator
 from .services.comparator import QuoteComparator
@@ -51,23 +50,6 @@ class DICProviderTestCase(TestCase):
     # Note: get_quote calls the mock API which might not be running during tests
     # unless we mock the request or start the server. 
     # For unit tests, we at least test the normalization and initialization.
-
-class NIAProviderTestCase(TestCase):
-    """Test NIA Provider Service"""
-    
-    def setUp(self):
-        self.provider = NIAProvider()
-        self.test_data = {
-            'age': 35,
-            'sum_insured': 750000,
-            'city': 'Abu Dhabi',
-            'members': 3,
-            'nid': '784-1990-1234567-1'
-        }
-    
-    def test_provider_initialization(self):
-        """Test provider is initialized correctly"""
-        self.assertEqual(self.provider.provider_name, 'NIA Insurance Online')
 
 class QICProviderTestCase(TestCase):
     """Test QIC Provider Service"""
@@ -103,10 +85,10 @@ class QuoteAggregatorTestCase(TestCase):
             provider_class_path="api_set1.services.providers.DIC.DICProvider"
         )
         InsuranceProvider.objects.create(
-            name="NIA ONLINE",
-            code="nia-online",
+            name="QIC UAE",
+            code="qic-uae",
             is_active=True,
-            provider_class_path="api_set1.services.providers.NID.NIAProvider"
+            provider_class_path="api_set1.services.providers.QIC.QICProvider"
         )
         
         self.aggregator = QuoteAggregator()
@@ -142,13 +124,6 @@ class QuoteComparatorTestCase(TestCase):
                 'claim_settlement_ratio': 95
             },
             {
-                'provider': 'ICICI UAE',
-                'premium': 9100,
-                'coverage': 500000,
-                'benefits': ['Cashless Network', '24/7 Claim Support', 'Room Upgrade'],
-                'claim_settlement_ratio': 92
-            },
-            {
                 'provider': 'QIC Insurance UAE',
                 'premium': 8700,
                 'coverage': 500000,
@@ -170,7 +145,7 @@ class QuoteComparatorTestCase(TestCase):
         best_quote, sorted_quotes = self.comparator.compare_quotes(self.sample_quotes)
         
         self.assertIsNotNone(best_quote)
-        self.assertEqual(len(sorted_quotes), 3)
+        self.assertEqual(len(sorted_quotes), 2)
         self.assertTrue(sorted_quotes[0]['is_best'])
         
         # Verify sorting by score
@@ -301,67 +276,3 @@ class DICMultiStepFlowTestCase(TestCase):
 
         # 4. Get Policy
         policy = self.provider.get_policy('QUO-1001-999')
-class NIAMotorFlowTestCase(TestCase):
-    """Test the complete 7-step flow for NIA Insurance (Assuretech)"""
-    
-    def setUp(self):
-        self.provider = NIAProvider(base_url='http://localhost:8000/mock-api/')
-        self.test_data = {
-            'first_name': 'ADITHI',
-            'last_name': 'B',
-            'nid': '784199432474021',
-            'email': 'adithi@mev1.ae',
-            'mobile': '528649081',
-            'chassis_number': '1N4SL3A92EC173668',
-            'make_code': 'E1034',
-            'model_code': 'E1034009',
-            'year': 2019
-        }
-        InsuranceProvider.objects.create(
-            name="NIA ONLINE",
-            code="nia-online",
-            is_active=True,
-            provider_class_path="api_set1.services.providers.NID.NIAProvider"
-        )
-        
-        self.aggregator = QuoteAggregator()
-
-    @patch('requests.post')
-    def test_complete_nia_flow(self, mock_post):
-        """Test Step 1 to 7 flow for NIA"""
-        # Mock responses for all steps
-        mock_post.side_effect = [
-            # 1. Auth
-            MagicMock(status_code=200, json=lambda: {"Status": 1, "Data": "JWT_TOKEN_ABC"}),
-            # 2. Quote
-            MagicMock(status_code=200, json=lambda: {
-                "Status": 1, 
-                "Data": {
-                    "ReferenceNo": "R/NIA-02746",
-                    "PlanDetails": [{"Code": "1001", "Name": "Agency", "Covers": []}]
-                }
-            }),
-            # 3. Save Plan (Step 3)
-            MagicMock(status_code=200, json=lambda: {"Status": 1, "Data": "Q/NIA-162428"}),
-            # 7. Approve (Step 7)
-            MagicMock(status_code=200, json=lambda: {
-                "Status": 1, 
-                "Data": {"PolicyNo": "P-NIA-2022-17082"}
-            })
-        ]
-
-        # 1. Auth
-        token = self.provider.authenticate()
-        self.assertEqual(token, "JWT_TOKEN_ABC")
-
-        # 2. Quote
-        quote = self.provider.get_quote(self.test_data)
-        self.assertEqual(quote['reference_no'], "R/NIA-02746")
-
-        # 3. Save Plan
-        quot_no = self.provider.save_quote_with_plan("R/NIA-02746", "1001", [])
-        self.assertEqual(quot_no, "Q/NIA-162428")
-
-        # 7. Approve
-        policy_no = self.provider.approve_policy("R/NIA-02746")
-        self.assertEqual(policy_no, "P-NIA-2022-17082")

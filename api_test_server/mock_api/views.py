@@ -27,23 +27,7 @@ class MockInsuranceQuoteView(APIView):
         elif action == 'policy':
             return self._handle_get_policy(request)
         
-        # NIA / Assuretech Flow
-        elif action == 'nia_auth':
-            return self._handle_nia_auth(request)
-        elif action == 'nia_quote':
-            return self._handle_nia_quote(request)
-        elif action == 'nia_save_plan':
-            return self._handle_nia_save_plan(request)
-        elif action == 'nia_save_info':
-            return self._handle_nia_save_info(request)
-        elif action == 'nia_save_doc':
-            return self._handle_nia_save_doc(request)
-        elif action == 'nia_summary':
-            return self._handle_nia_summary(request)
-        elif action == 'nia_approve':
-            return self._handle_nia_approve(request)
-
-        # Fallback to existing logic for basic quote requests
+        # Fallback to existing logic for provider quote requests
         if provider_code:
             return self._handle_legacy_quote(request, provider_code, requested_format)
         
@@ -103,78 +87,12 @@ class MockInsuranceQuoteView(APIView):
             "documents": "BASE64_MOCK_PDF_CONTENT"
         }, status=status.HTTP_200_OK)
 
-    # =========================================================================
-    # NIA / ASSURETECH MOCK HANDLERS
-    # =========================================================================
-
-    def _handle_nia_auth(self, request):
-        if request.data.get('username') == "sabir.a@nia-dubai.com":
-            return JsonResponse({
-                "Status": 1,
-                "StatusMessage": "Login successful",
-                "Data": "MOCK_NIA_JW_TOKEN_EYJHB..."
-            }, status=status.HTTP_200_OK)
-        return JsonResponse({"Status": 0, "StatusMessage": "Login failed"}, status=status.HTTP_401_UNAUTHORIZED)
-
-    def _handle_nia_quote(self, request):
-        return JsonResponse({
-            "Status": 1,
-            "Data": {
-                "ReferenceNo": "R/NIA-02746",
-                "SchemeCode": "1000",
-                "PlanDetails": [
-                    {
-                        "Code": "1001", "Name": "Motor Comprehensive – Agency",
-                        "Covers": [{"Code": "100001", "Description": "Loss Cover", "CoverPremFc": 1800.0}]
-                    },
-                    {
-                        "Code": "1501", "Name": "Third Party Liability",
-                        "Covers": [{"Code": "100007", "Description": "Third Party Liability", "CoverPremFc": 800.0}]
-                    }
-                ]
-            }
-        }, status=status.HTTP_200_OK)
-
-    def _handle_nia_save_plan(self, request):
-        return JsonResponse({
-            "Status": 1,
-            "Data": "Q/NIA-162428"
-        }, status=status.HTTP_200_OK)
-
-    def _handle_nia_save_info(self, request):
-        return JsonResponse({
-            "Status": 1,
-            "StatusMessage": "Info saved successfully",
-            "Data": "Q/NIA-162428"
-        }, status=status.HTTP_200_OK)
-
-    def _handle_nia_save_doc(self, request):
-        return JsonResponse({
-            "Status": 1,
-            "StatusMessage": "Successfully uploaded documents"
-        }, status=status.HTTP_200_OK)
-
-    def _handle_nia_summary(self, request):
-        return JsonResponse({
-            "Status": 1,
-            "Data": {
-                "Policy": {"PolRefNo": request.data.get('PolRefNo'), "PolAssrName": "ADITHI B"},
-                "Vehicle": {"VehChassisNo": "1N4SL..."}
-            }
-        }, status=status.HTTP_200_OK)
-
-    def _handle_nia_approve(self, request):
-        return JsonResponse({
-            "Status": 1,
-            "Data": {"PolicyNo": "P-NIA-2022-17082"}
-        }, status=status.HTTP_200_OK)
-
     def _handle_legacy_quote(self, request, provider_code, requested_format):
         # Original logic preserved
         insurance_type = request.data.get('insurance_type', 'health').lower()
         provider_map = {
-            'dic-broker-uae': 'dic', 'icici-uae': 'icici', 'qic-uae': 'qic',
-            'dic': 'dic', 'icici': 'icici', 'qic': 'qic',
+            'dic-broker-uae': 'dic', 'qic-uae': 'qic',
+            'dic': 'dic', 'qic': 'qic',
         }
         base_name = provider_map.get(provider_code.lower())
         if not base_name:

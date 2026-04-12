@@ -62,7 +62,7 @@ The core service that aggregates and compares quotes from multiple providers.
 ---
 
 ## 🛠️ Mock API (External Simulation)
-Simulates external insurance providers (DIC, ICICI, QIC).
+Simulates external insurance providers (DIC, QIC).
 
 ### 1. Provider Quotation (JSON)
 - **Endpoint**: `POST /mock-api/{provider}/quotes/`

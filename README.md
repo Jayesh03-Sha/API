@@ -8,8 +8,8 @@ A **production-ready Django REST API** that fetches quotes from multiple insuran
 
 ## ✨ Key Features
 
-- ✅ **Multi-Provider Integration** - Aggregate quotes from 3+ insurance providers simultaneously
-- ✅ **Parallel Processing** - Fetch quotes from all providers in ~300-500ms (3-4x faster than sequential)
+- ✅ **Two-Provider Integration** - Aggregate quotes from DIC and QIC only
+- ✅ **Parallel Processing** - Fetch quotes from both providers quickly
 - ✅ **Smart Comparison** - Intelligent scoring algorithm weighing premium, benefits, coverage, and claim settlement
 - ✅ **JWT Authentication** - Secure token-based user authentication
 - ✅ **User Isolation** - Users can only access their own quote history
@@ -34,7 +34,7 @@ User Requests Quotes
    [Save Quote Request]
         ↓
    [Fetch from All Providers in Parallel]
-   HDFC Ergo | ICICI Lombard | Star Health
+   DIC | QIC
         ↓
    [Compare & Score Quotes]
    Premium(40%) + Benefits(30%) + Coverage(15%) + Claims(10%) + Network(5%)
@@ -63,7 +63,7 @@ User Requests Quotes
 ```json
 {
   "best_quote": {
-    "provider": "HDFC Ergo",
+    "provider": "DIC Insurance Broker UAE",
     "premium": 8500.00,
     "coverage": 500000.00,
     "benefits": ["Cashless Hospitals", "No Claim Bonus"],
@@ -71,9 +71,8 @@ User Requests Quotes
     "is_best": true
   },
   "quotes": [
-    {"provider": "HDFC Ergo", "premium": 8500, "score": 92.45},
-    {"provider": "Star Health", "premium": 8700, "score": 90.15},
-    {"provider": "ICICI Lombard", "premium": 9100, "score": 88.20}
+    {"provider": "DIC Insurance Broker UAE", "premium": 8500, "score": 92.45},
+    {"provider": "QIC Insurance UAE", "premium": 8700, "score": 90.15}
   ],
   "comparison_summary": {
     "count": 3,
@@ -185,9 +184,8 @@ python manage.py test api_set1.test_quotation -v 2
 python manage.py test api_set1.test_quotation.QuoteAPITestCase -v 2
 
 # Test providers
-python manage.py test api_set1.test_quotation.HDFCProviderTestCase
-python manage.py test api_set1.test_quotation.ICICIProviderTestCase
-python manage.py test api_set1.test_quotation.StarProviderTestCase
+python manage.py test api_set1.test_quotation.DICProviderTestCase
+python manage.py test api_set1.test_quotation.QICProviderTestCase
 
 # Test aggregation
 python manage.py test api_set1.test_quotation.QuoteAggregatorTestCase
@@ -224,9 +222,8 @@ api_set1/
 │   ├── comparator.py            # Smart comparison & scoring
 │   └── providers/
 │       ├── base.py              # Abstract provider
-│       ├── hdfc.py              # HDFC Ergo integration
-│       ├── icici.py             # ICICI Lombard integration
-│       └── star.py              # Star Health integration
+│       ├── DIC.py               # DIC provider
+│       ├── QIC.py               # QIC provider
 ```
 
 ### Technology Stack
@@ -257,9 +254,8 @@ Score = (Premium × 0.40) + (Benefits × 0.30) + (Coverage × 0.15) +
 | Hospital Network | 5% | Larger network = higher score |
 
 **Example:**
-- HDFC: 8,500 premium, 4 benefits → Score: 92.45 ⭐ Best
-- Star: 8,700 premium, 3 benefits → Score: 90.15
-- ICICI: 9,100 premium, 5 benefits → Score: 88.20
+- DIC: 8,500 premium, 4 benefits → Score: 92.45 ⭐ Best
+- QIC: 8,700 premium, 3 benefits → Score: 90.15
 
 ---
 
@@ -457,8 +453,8 @@ This project is part of the PROMISE INSURE API Test Application.
 
 ## 🎯 Key Achievements
 
-- ✅ **Multi-Provider System** - Aggregates from HDFC, ICICI, Star (extensible)
-- ✅ **Parallel Processing** - 3-4x faster than sequential
+- ✅ **Two-Provider System** - Compares DIC and QIC only
+- ✅ **Parallel Processing** - fast provider aggregation
 - ✅ **Smart Comparison** - Weighted scoring algorithm
 - ✅ **Secure API** - JWT auth + user isolation
 - ✅ **Comprehensive Testing** - 50+ test cases
