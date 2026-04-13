@@ -9,6 +9,7 @@ whitenoise==6.9.0
 dj-database-url==2.3.0
 psycopg2-binary==2.9.10
 xhtml2pdf==0.2.16
+python-bidi==0.4.2
 python-dotenv==1.0.1
 sqlparse==0.5.5
 tzdata==2026.1

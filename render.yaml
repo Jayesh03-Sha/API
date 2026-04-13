@@ -15,6 +15,10 @@ services:
         value: "False"
       - key: ALLOWED_HOSTS
         value: "*"
+      - key: CARGO_HOME
+        value: "/tmp/.cargo"
+      - key: RUSTUP_HOME
+        value: "/tmp/.rustup"
         
 databases:
   - name: promise_db
