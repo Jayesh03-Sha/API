@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.db.models import Count, Sum, Q
+from django.db.models import Avg, Count, Sum, Q
 from django.utils import timezone
 from datetime import timedelta
 
@@ -16,9 +16,16 @@ from api_set1.models import (
 
 
 def home(request):
+    context = {}
     if request.user.is_authenticated and request.user.is_staff:
-        return redirect('admin_dashboard')
-    return render(request, 'ui/home.html')
+        context = {
+            'total_leads': Lead.objects.count(),
+            'total_deals': Deal.objects.count(),
+            'total_transactions': Transaction.objects.count(),
+            'total_quotes': QuoteRequest.objects.count(),
+            'total_providers': InsuranceProvider.objects.filter(is_active=True).count(),
+        }
+    return render(request, 'ui/home.html', context)
 
 
 @login_required
@@ -55,9 +62,31 @@ def admin_dashboard(request):
     recent_transactions = Transaction.objects.select_related(
         'individual_customer', 'corporate_customer'
     ).order_by('-created_at')[:5]
+    recent_quotes = Quote.objects.select_related('quote_request').order_by('-created_at')[:6]
     recent_statuses = StatusOverview.objects.select_related(
         'transaction', 'user', 'assigned_user'
     ).order_by('-date')[:8]
+
+    # Provider performance summary
+    provider_stats_raw = Quote.objects.values('provider').annotate(
+        total_quotes=Count('id'),
+        best_quotes=Count('id', filter=Q(is_best=True)),
+        avg_premium=Avg('premium'),
+        avg_score=Avg('comparison_score')
+    ).order_by('-total_quotes')
+
+    provider_name_map = dict(Quote.PROVIDER_CHOICES)
+    provider_performance = [
+        {
+            'provider': item['provider'],
+            'provider_name': provider_name_map.get(item['provider'], item['provider']),
+            'total_quotes': item['total_quotes'],
+            'best_quotes': item['best_quotes'],
+            'avg_premium': item['avg_premium'] or 0,
+            'avg_score': item['avg_score'] or 0,
+        }
+        for item in provider_stats_raw
+    ]
 
     # Product type distribution
     product_distribution = Lead.objects.values('product_type').annotate(
@@ -73,6 +102,8 @@ def admin_dashboard(request):
         'total_quotes': total_quotes,
         'total_providers': total_providers,
         'total_users': total_users,
+        'recent_quotes': recent_quotes,
+        'provider_performance': provider_performance,
         'revenue': revenue,
         'commission': commission,
         'lead_stages': lead_stages,

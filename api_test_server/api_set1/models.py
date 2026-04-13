@@ -48,6 +48,7 @@ class Quote(models.Model):
     PROVIDER_CHOICES = [
         ('qic', 'QIC Insurance UAE'),
         ('dic', 'DIC Insurance Broker UAE'),
+        ('nia', 'NIA Insurance UAE'),
     ]
     
     quote_request = models.ForeignKey(QuoteRequest, on_delete=models.CASCADE, related_name='quotes')

@@ -21,6 +21,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import QuoteRequest, Quote, UserProfile, InsuranceProvider
 from .services.providers.DIC import DICProvider
 from .services.providers.QIC import QICProvider
+from .services.providers.NIA import NIAProvider
 from .services.aggregator import QuoteAggregator
 from .services.comparator import QuoteComparator
 
@@ -69,6 +70,30 @@ class QICProviderTestCase(TestCase):
         self.assertEqual(self.provider.provider_name, 'QIC Insurance UAE')
 
 
+class NIAProviderTestCase(TestCase):
+    """Test NIA Provider Service"""
+
+    def setUp(self):
+        self.provider = NIAProvider()
+        self.test_data = {
+            'age': 30,
+            'sum_insured': 500000,
+            'city': 'Dubai',
+            'members': 2,
+            'nid': '784-1990-1234567-1',
+            'polAssrName': 'Test User',
+            'polAssrLastName': 'Tester',
+            'VehChassisNo': 'RKLBB0BE4P0048836',
+            'VehModel': '9195',
+            'VehMake': '009',
+            'VehMfgYear': '2023',
+        }
+
+    def test_provider_initialization(self):
+        """Test provider is initialized correctly"""
+        self.assertEqual(self.provider.provider_name, 'NIA Insurance UAE')
+
+
 # ============================================================================
 # Aggregator Tests
 # ============================================================================
@@ -89,6 +114,12 @@ class QuoteAggregatorTestCase(TestCase):
             code="qic-uae",
             is_active=True,
             provider_class_path="api_set1.services.providers.QIC.QICProvider"
+        )
+        InsuranceProvider.objects.create(
+            name="NIA UAE",
+            code="nia-uae",
+            is_active=True,
+            provider_class_path="api_set1.services.providers.NIA.NIAProvider"
         )
         
         self.aggregator = QuoteAggregator()
@@ -184,6 +215,12 @@ class QuoteAPITestCase(APITestCase):
             code="dic-broker-uae",
             is_active=True,
             provider_class_path="api_set1.services.providers.DIC.DICProvider"
+        )
+        InsuranceProvider.objects.create(
+            name="NIA UAE",
+            code="nia-uae",
+            is_active=True,
+            provider_class_path="api_set1.services.providers.NIA.NIAProvider"
         )
         
         self.base_url = '/api'

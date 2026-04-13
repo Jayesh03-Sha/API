@@ -340,6 +340,55 @@ Authorization: Bearer {access_token}
 
 ---
 
+## 🔄 Full End-to-End Quote Flow
+
+### 1. Start on the public homepage
+- Open the site at `http://127.0.0.1:8000/`
+- The homepage shows the public quote portal and, for staff users, live database counts for leads, deals, transactions, quote requests, and active providers.
+- Staff users can navigate directly to the admin dashboard, leads, deals, and transaction pages from the home screen.
+
+### 2. Authenticate and obtain a JWT token
+- Send a `POST` to `/api/auth/login/` with valid credentials.
+- Use the returned `access` token in the `Authorization: Bearer {access}` header.
+
+### 3. Build the quote request payload
+- Choose `insurance_type`: `health`, `motor`, `travel`, or `home`.
+- Provide `age`, `sum_insured`, `city`, `members`, and optional `additional_details`.
+- Example:
+```json
+{
+  "insurance_type": "health",
+  "age": 30,
+  "sum_insured": 500000,
+  "city": "Dubai",
+  "members": 2,
+  "additional_details": {
+    "pre_existing_conditions": false,
+    "smoker": false
+  }
+}
+```
+
+### 4. Submit the comparison request
+- Call `POST /api/quotes/get-quotes/`
+- The system sends parallel requests to DIC, QIC, and NIA provider APIs.
+- The backend aggregates responses, normalizes providers, and runs the `QuoteComparator` scoring engine.
+
+### 5. Review the returned quote comparison
+- The response includes `best_quote` plus the full `quotes` array.
+- The score is calculated from premium, coverage, benefits, network, and claim metrics.
+- The returned payload includes provider details and the top recommendation.
+
+### 6. Display on the web dashboard
+- The public home page renders the best quote and a comparison tab with provider-level results.
+- Staff users can also use the admin dashboard to monitor leads, deals, transactions, quote request volume, and provider activity.
+
+### 7. Generate the final quotation
+- Once the best quote is identified, use the provider's details and `quote_request_id` to generate a proposal or finalize the policy in the admin section.
+- The UI supports quote selection and proposal generation at `/dashboard/quotes/{quote_request_id}/proposal/`.
+
+---
+
 ## 🧮 Quote Scoring Algorithm
 
 The system uses a weighted scoring formula to rank quotes:

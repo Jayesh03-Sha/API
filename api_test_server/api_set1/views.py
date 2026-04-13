@@ -8,7 +8,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
 import logging
 from django.http import HttpResponse
-from .services.pdf_service import PDFService
 
 from .serializers import (
     RegisterSerializer,
@@ -449,58 +448,3 @@ class GetPolicyView(APIView):
                 })
 
         return Response({'error': 'Failed to generate policy'}, status=status.HTTP_400_BAD_REQUEST)
-
-class DownloadQuotePDFView(APIView):
-    """
-    View to generate and download a PDF quotation for a specific QuoteRequest.
-    """
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, quote_request_id):
-        try:
-            # Get quote request, ensure it belongs to the user
-            quote_request = QuoteRequest.objects.get(
-                id=quote_request_id,
-                user=request.user
-            )
-            
-            # Get all quotes for this request
-            quotes = Quote.objects.filter(quote_request=quote_request).order_by('-comparison_score')
-            
-            if not quotes.exists():
-                return Response(
-                    {'error': 'No quotes found for this request.'},
-                    status=status.HTTP_404_NOT_FOUND
-                )
-            
-            best_quote = quotes.filter(is_best=True).first()
-            
-            context = {
-                'quote_request': quote_request,
-                'quotes': quotes,
-                'best_quote': best_quote,
-                'is_pdf': True  # Can be used in template to adjust layout
-            }
-            
-            pdf_response = PDFService.render_to_pdf('ui/proposal.html', context)
-            if pdf_response:
-                filename = f"Promise_Insurance_Quotation_{quote_request_id}.pdf"
-                pdf_response['Content-Disposition'] = f'attachment; filename="{filename}"'
-                return pdf_response
-            
-            return Response(
-                {'error': 'Failed to generate PDF.'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-            
-        except QuoteRequest.DoesNotExist:
-            return Response(
-                {'error': 'Quote request not found.'},
-                status=status.HTTP_404_NOT_FOUND
-            )
-        except Exception as e:
-            logger.error(f"Error in DownloadQuotePDFView: {str(e)}", exc_info=True)
-            return Response(
-                {'error': 'An error occurred while generating PDF.'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )

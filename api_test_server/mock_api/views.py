@@ -91,7 +91,7 @@ class MockInsuranceQuoteView(APIView):
         # Original logic preserved
         insurance_type = request.data.get('insurance_type', 'health').lower()
         provider_map = {
-            'dic-broker-uae': 'dic', 'qic-uae': 'qic',
+            'dic-broker-uae': 'dic', 'qic-uae': 'qic', 'nia': 'nia', 'nia-insurance-uae': 'nia',
             'dic': 'dic', 'qic': 'qic',
         }
         base_name = provider_map.get(provider_code.lower())

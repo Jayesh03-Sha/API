@@ -481,7 +481,7 @@
   "variable": [
     {
       "key": "base_url",
-      "value": "http://localhost:8000",
+      "value": "https://api-demo-7ze4.onrender.com",
       "type": "string"
     },
     {

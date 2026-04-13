@@ -10,8 +10,7 @@ from .views import (
     QuoteHistoryView,
     QuoteDetailView,
     SelectSchemeView,
-    GetPolicyView,
-    DownloadQuotePDFView
+    GetPolicyView
 )
 
 app_name = 'api_set1'
@@ -31,5 +30,4 @@ urlpatterns = [
     path('quotes/<int:quote_request_id>/', QuoteDetailView.as_view(), name='quote_detail'),
     path('quotes/<int:quote_id>/select-scheme/', SelectSchemeView.as_view(), name='select_scheme'),
     path('quotes/<int:quote_id>/get-policy/', GetPolicyView.as_view(), name='get_policy'),
-    path('quotes/<int:quote_request_id>/download-pdf/', DownloadQuotePDFView.as_view(), name='download_pdf'),
 ]

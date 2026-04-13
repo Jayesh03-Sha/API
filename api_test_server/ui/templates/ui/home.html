@@ -5,14 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Promise Insure - Home</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; color: #222; }
         header { background-color: #007bff; color: white; padding: 1rem; text-align: center; }
         .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
         .hero { text-align: center; padding: 2rem 0; }
         .hero h1 { font-size: 2.5rem; margin-bottom: 1rem; }
-        .hero p { font-size: 1.2rem; color: #666; }
-        .features { display: flex; justify-content: space-around; margin-top: 2rem; }
-        .feature { background: white; padding: 1rem; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); width: 30%; text-align: center; }
+        .hero p { font-size: 1.2rem; color: #f1f7ff; }
+        .card { background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+        .form-group { display: flex; flex-direction: column; }
+        label { margin-bottom: 0.5rem; color: #444; font-weight: 600; }
+        input, select, textarea { padding: 0.85rem; border-radius: 8px; border: 1px solid #d1d5db; font-size: 1rem; }
+        textarea { resize: vertical; }
+        button { background: #007bff; color: white; border: none; padding: 0.95rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 1rem; margin-top: 1rem; transition: background 0.2s ease; }
+        button:hover { background: #0056d6; }
+        .info-box { background: #eef6ff; border: 1px solid #cfe2ff; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+        .note { color: #555; margin-bottom: 1rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-top: 1rem; }
+        .stats-card { background: white; border-radius: 12px; padding: 1rem 1.2rem; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.05); }
+        .stats-card strong { display: block; font-size: 1.75rem; color: #1d4ed8; margin-bottom: 0.3rem; }
+        .stats-card span { color: #475569; font-size: 0.95rem; }
+        .tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+        .tab-button { background: #f1f5f9; color: #1f2937; border: 1px solid #d1d5db; border-radius: 8px; padding: 0.8rem 1rem; cursor: pointer; transition: background 0.2s ease, border-color 0.2s ease; }
+        .tab-button.active { background: #007bff; color: white; border-color: #007bff; }
+        .tab-content { display: none; }
+        .result-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.25rem; margin-bottom: 1rem; }
+        .result-card.highlight { border-color: #2563eb; background: #eff6ff; }
+        .result-card p { margin: 0.4rem 0; }
+        pre { white-space: pre-wrap; word-wrap: break-word; background: #111827; color: #f8fafc; padding: 1rem; border-radius: 10px; overflow-x: auto; }
     </style>
 </head>
 <body>
@@ -22,30 +42,216 @@
     <div class="container">
         <div class="hero">
             <h1>Your Trusted Insurance Partner</h1>
-            <p>Get the best insurance quotes from multiple providers in one place.</p>
+            <p>Get the best insurance quotes from DIC, QIC, and NIA in one place.</p>
             {% if user.is_authenticated %}
                 <p>Welcome back, {{ user.username }}!</p>
                 {% if user.is_staff %}
-                    <a href="{% url 'admin_dashboard' %}" style="background: #28a745; color: white; padding: 0.5rem 1rem; text-decoration: none; border-radius: 5px;">Go to Admin Dashboard</a>
+                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; margin: 1rem 0;">
+                        <a href="{% url 'admin_dashboard' %}" class="tab-button" style="background: #28a745; color: white;">Dashboard</a>
+                        <a href="{% url 'leads_list' %}" class="tab-button">Leads</a>
+                        <a href="{% url 'deals_list' %}" class="tab-button">Deals</a>
+                        <a href="{% url 'transactions_list' %}" class="tab-button">Transactions</a>
+                    </div>
+                    {% if total_leads is not None %}
+                        <div class="stats-grid">
+                            <div class="stats-card">
+                                <strong>{{ total_leads }}</strong>
+                                <span>Leads</span>
+                            </div>
+                            <div class="stats-card">
+                                <strong>{{ total_deals }}</strong>
+                                <span>Deals</span>
+                            </div>
+                            <div class="stats-card">
+                                <strong>{{ total_transactions }}</strong>
+                                <span>Transactions</span>
+                            </div>
+                            <div class="stats-card">
+                                <strong>{{ total_quotes }}</strong>
+                                <span>Quote Requests</span>
+                            </div>
+                            <div class="stats-card">
+                                <strong>{{ total_providers }}</strong>
+                                <span>Active Providers</span>
+                            </div>
+                        </div>
+                    {% endif %}
                 {% endif %}
             {% else %}
                 <a href="{% url 'admin:login' %}" style="background: #007bff; color: white; padding: 0.5rem 1rem; text-decoration: none; border-radius: 5px;">Login</a>
             {% endif %}
         </div>
-        <div class="features">
-            <div class="feature">
-                <h3>Compare Quotes</h3>
-                <p>Get quotes from multiple insurance providers instantly.</p>
+        <div class="card">
+            <h2>Quote Request</h2>
+            <p class="note">Use this page to send a request to the quote comparison API. The system compares DIC, QIC, and NIA provider APIs and returns the best ranked quote.</p>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="token">JWT Access Token</label>
+                    <textarea id="token" rows="3" placeholder="Paste your access token here"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="insurance_type">Insurance Type</label>
+                    <select id="insurance_type">
+                        <option value="health">Health</option>
+                        <option value="motor">Motor</option>
+                        <option value="travel">Travel</option>
+                        <option value="home">Home</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input id="age" type="number" min="18" max="100" value="30" />
+                </div>
+                <div class="form-group">
+                    <label for="sum_insured">Sum Insured</label>
+                    <input id="sum_insured" type="number" min="1000" value="500000" />
+                </div>
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input id="city" type="text" value="Dubai" />
+                </div>
+                <div class="form-group">
+                    <label for="members">Members</label>
+                    <input id="members" type="number" min="1" max="10" value="2" />
+                </div>
             </div>
-            <div class="feature">
-                <h3>Easy Application</h3>
-                <p>Simple and fast application process.</p>
+            <button id="submitBtn">Fetch Quotes</button>
+            <div id="message" class="info-box" style="display:none;"></div>
+        </div>
+
+        <div class="card" style="margin-top: 1.5rem;">
+            <div class="tabs">
+                <button class="tab-button active" data-tab="tab-best">Best Quote</button>
+                <button class="tab-button" data-tab="tab-compare">Compare Quotes</button>
+                <button class="tab-button" data-tab="tab-raw">Raw JSON</button>
             </div>
-            <div class="feature">
-                <h3>24/7 Support</h3>
-                <p>Our team is here to help you anytime.</p>
+            <div id="responseContainer" class="tab-content" style="display:block;">
+                <h2>Best Quote</h2>
+                <div id="bestQuote" class="result-card">
+                    <p>No quote requested yet. Enter details and click &quot;Fetch Quotes&quot;.</p>
+                </div>
+            </div>
+            <div id="compareQuotes" class="tab-content" style="display:none;">
+                <h2>Provider Comparison</h2>
+                <div id="quotesList"></div>
+            </div>
+            <div id="rawJson" class="tab-content" style="display:none;">
+                <h2>Raw Response JSON</h2>
+                <pre id="rawData">No response yet.</pre>
             </div>
         </div>
     </div>
+
+    <script>
+        const submitBtn = document.getElementById('submitBtn');
+        const messageBox = document.getElementById('message');
+        const bestQuote = document.getElementById('bestQuote');
+        const quotesList = document.getElementById('quotesList');
+        const rawData = document.getElementById('rawData');
+        const tabs = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(button => {
+            button.addEventListener('click', () => {
+                tabs.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.style.display = 'none');
+
+                button.classList.add('active');
+                document.getElementById(button.dataset.tab).style.display = 'block';
+            });
+        });
+
+        submitBtn.addEventListener('click', async () => {
+            const token = document.getElementById('token').value.trim();
+            const data = {
+                insurance_type: document.getElementById('insurance_type').value,
+                age: Number(document.getElementById('age').value),
+                sum_insured: Number(document.getElementById('sum_insured').value),
+                city: document.getElementById('city').value,
+                members: Number(document.getElementById('members').value)
+            };
+
+            if (!token) {
+                showMessage('Please provide a valid JWT access token to call the API.', true);
+                return;
+            }
+
+            showMessage('Fetching quotes from DIC, QIC, and NIA providers...', false);
+            bestQuote.innerHTML = '<p>Loading best quote...</p>';
+            quotesList.innerHTML = '<p>Loading comparison results...</p>';
+            rawData.textContent = 'Loading raw response...';
+            document.querySelector('[data-tab="tab-best"]').click();
+
+            try {
+                const res = await fetch('/api/quotes/get-quotes/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const response = await res.json();
+                if (!res.ok) {
+                    throw new Error(response.detail || JSON.stringify(response));
+                }
+
+                showMessage('Quote comparison completed successfully.', false);
+                renderBestQuote(response.best_quote || {});
+                renderComparison(response.quotes || []);
+                rawData.textContent = JSON.stringify(response, null, 2);
+            } catch (error) {
+                showMessage('Error: ' + error.message, true);
+                bestQuote.innerHTML = '<p>Failed to fetch quote.</p>';
+                quotesList.innerHTML = '<p>Failed to fetch comparison results.</p>';
+                rawData.textContent = error.message;
+            }
+        });
+
+        function renderBestQuote(quote) {
+            if (!quote || !quote.provider) {
+                bestQuote.innerHTML = '<p>No best quote returned. Check your request details and token.</p>';
+                return;
+            }
+
+            bestQuote.innerHTML = `
+                <div class="result-card highlight">
+                    <p><strong>Provider:</strong> ${quote.provider}</p>
+                    <p><strong>Premium:</strong> AED ${quote.premium}</p>
+                    <p><strong>Coverage:</strong> AED ${quote.coverage}</p>
+                    <p><strong>Score:</strong> ${quote.comparison_score}</p>
+                    <p><strong>Benefits:</strong> ${Array.isArray(quote.benefits) ? quote.benefits.join(', ') : quote.benefits}</p>
+                    <p><strong>Best Quote Code:</strong> ${quote.provider ? quote.provider.replace(/\s+/g, '_').toUpperCase() : 'N/A'}</p>
+                    <p><strong>Verdict:</strong> ${quote.verdict || 'Top ranked quote from provider comparison.'}</p>
+                </div>
+            `;
+        }
+
+        function renderComparison(quotes) {
+            if (!Array.isArray(quotes) || quotes.length === 0) {
+                quotesList.innerHTML = '<p>No provider quotes returned.</p>';
+                return;
+            }
+
+            quotesList.innerHTML = quotes.map(q => `
+                <div class="result-card ${q.is_best ? 'highlight' : ''}">
+                    <p><strong>Provider:</strong> ${q.provider}</p>
+                    <p><strong>Premium:</strong> AED ${q.premium}</p>
+                    <p><strong>Coverage:</strong> AED ${q.coverage}</p>
+                    <p><strong>Score:</strong> ${q.comparison_score || q.score}</p>
+                    <p><strong>Benefits:</strong> ${Array.isArray(q.benefits) ? q.benefits.join(', ') : q.benefits}</p>
+                    <p><strong>Advantages:</strong> ${Array.isArray(q.competitive_advantages) ? q.competitive_advantages.join(', ') : q.competitive_advantages}</p>
+                </div>
+            `).join('');
+        }
+
+        function showMessage(text, isError) {
+            messageBox.style.display = 'block';
+            messageBox.style.background = isError ? '#ffe6e6' : '#e6f4ff';
+            messageBox.style.borderColor = isError ? '#ffb3b3' : '#b3d7ff';
+            messageBox.textContent = text;
+        }
+    </script>
 </body>
 </html>

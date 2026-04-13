@@ -1,0 +1,40 @@
+{
+  "provider": "NIA Insurance UAE",
+  "plans": [
+    {
+      "prodCode": "3001",
+      "plan_name": "NIA Motor Premium",
+      "premium": 1325.0,
+      "sumInsured": 90000.0,
+      "benefits": [
+        "GCC Coverage",
+        "Windshield Repair",
+        "Emergency Towing",
+        "Personal Accident"
+      ],
+      "details": {
+        "make": "TOYOTA",
+        "model": "CAMRY",
+        "year": 2024,
+        "plate": "DUBAI N 12345"
+      }
+    },
+    {
+      "prodCode": "3002",
+      "plan_name": "NIA Motor Value",
+      "premium": 980.0,
+      "sumInsured": 65000.0,
+      "benefits": [
+        "Third Party Liability",
+        "Personal Accident",
+        "Roadside Assistance"
+      ],
+      "details": {
+        "make": "HYUNDAI",
+        "model": "ELANTRA",
+        "year": 2021,
+        "plate": "ABU DHABI N 67890"
+      }
+    }
+  ]
+}

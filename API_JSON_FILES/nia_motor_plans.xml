@@ -1,0 +1,27 @@
+<ProviderResponse>
+    <ProviderName>NIA Insurance UAE</ProviderName>
+    <Plans>
+        <Plan>
+            <Name>NIA Motor Premium - TOYOTA CAMRY</Name>
+            <Premium>1325.0</Premium>
+            <Coverage>90000.0</Coverage>
+            <Benefits>
+                <Benefit>GCC Coverage</Benefit>
+                <Benefit>Windshield Repair</Benefit>
+                <Benefit>Emergency Towing</Benefit>
+            </Benefits>
+            <WaitingPeriod>0</WaitingPeriod>
+        </Plan>
+        <Plan>
+            <Name>NIA Motor Value - HYUNDAI ELANTRA</Name>
+            <Premium>980.0</Premium>
+            <Coverage>65000.0</Coverage>
+            <Benefits>
+                <Benefit>Third Party Liability</Benefit>
+                <Benefit>Personal Accident</Benefit>
+                <Benefit>Roadside Assistance</Benefit>
+            </Benefits>
+            <WaitingPeriod>0</WaitingPeriod>
+        </Plan>
+    </Plans>
+</ProviderResponse>

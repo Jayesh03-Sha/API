@@ -203,10 +203,10 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <h2>PROMISE INSURE</h2>
-            <a href="{% url 'admin_dashboard' %}" class="nav-item active"><i class="fas fa-home"></i> Overview</a>
-            <a href="{% url 'leads_list' %}" class="nav-item"><i class="fas fa-bullhorn"></i> Leads</a>
-            <a href="{% url 'deals_list' %}" class="nav-item"><i class="fas fa-handshake"></i> Deals</a>
-            <a href="{% url 'transactions_list' %}" class="nav-item"><i class="fas fa-money-bill-wave"></i> Transactions</a>
+            <a href="{% url 'admin_dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}"><i class="fas fa-home"></i> Overview</a>
+            <a href="{% url 'leads_list' %}" class="nav-item {% if request.resolver_match.url_name == 'leads_list' %}active{% endif %}"><i class="fas fa-bullhorn"></i> Leads</a>
+            <a href="{% url 'deals_list' %}" class="nav-item {% if request.resolver_match.url_name == 'deals_list' %}active{% endif %}"><i class="fas fa-handshake"></i> Deals</a>
+            <a href="{% url 'transactions_list' %}" class="nav-item {% if request.resolver_match.url_name == 'transactions_list' %}active{% endif %}"><i class="fas fa-money-bill-wave"></i> Transactions</a>
             <a href="{% url 'admin:index' %}" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
             <div style="margin-top: auto;">
                 <a href="{% url 'admin:logout' %}" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
@@ -290,6 +290,35 @@
                 </table>
             </div>
 
+            <!-- Recent Quote Requests -->
+            <div class="recent-leads" style="margin-top: 30px;">
+                <h3><i class="fas fa-receipt"></i> Recent Quotes</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Provider</th>
+                            <th>Premium</th>
+                            <th>Score</th>
+                            <th>Quote Request</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for quote in recent_quotes %}
+                        <tr>
+                            <td>{{ quote.get_provider_display }}</td>
+                            <td>AED {{ quote.premium|floatformat:0 }}</td>
+                            <td>{{ quote.comparison_score|floatformat:2 }}</td>
+                            <td>{{ quote.quote_request.get_insurance_type_display }} by {{ quote.quote_request.user.username }}</td>
+                            <td>{{ quote.created_at|date:'M d, Y H:i' }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" style="text-align: center;">No recent quotes available.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
             <!-- Pipeline Breakdown -->
             <div style="margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div class="recent-leads" style="padding: 20px;">
@@ -309,9 +338,44 @@
                 <div class="recent-leads" style="padding: 20px;">
                     <h4><i class="fas fa-network-wired"></i> System Health</h4>
                     <p style="font-size: 13px;">Connected Providers: <strong>{{ total_providers }}</strong></p>
-                    <p style="font-size: 13px;">Active DB Tables: <strong>14</strong></p>
-                    <p style="font-size: 13px;">Last Sync: <strong>Just Now</strong></p>
+                    <p style="font-size: 13px;">Quote Requests Processed: <strong>{{ total_quotes }}</strong></p>
+                    <p style="font-size: 13px;">Recent Quote Providers: <strong>{{ provider_performance|length }}</strong></p>
+                    <p style="font-size: 13px;">Mock Data Sources: <strong>DIC / QIC / NIA</strong></p>
+                    {% if provider_performance %}
+                    <p style="font-size: 13px;">Highest Volume Provider: <strong>{{ provider_performance.0.provider_name }}</strong></p>
+                    {% endif %}
                 </div>
+            </div>
+
+            <!-- Provider Performance Summary -->
+            <div class="recent-leads" style="margin-top: 30px; padding: 20px;">
+                <h4><i class="fas fa-chart-bar"></i> Provider Performance</h4>
+                {% if provider_performance %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Provider</th>
+                            <th>Quotes</th>
+                            <th>Best</th>
+                            <th>Avg Premium</th>
+                            <th>Avg Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in provider_performance %}
+                        <tr>
+                            <td>{{ item.provider_name }}</td>
+                            <td>{{ item.total_quotes }}</td>
+                            <td>{{ item.best_quotes }}</td>
+                            <td>AED {{ item.avg_premium|floatformat:0 }}</td>
+                            <td>{{ item.avg_score|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p style="margin: 0;">Provider performance is unavailable until quotes are generated.</p>
+                {% endif %}
             </div>
         </div>
     </div>
