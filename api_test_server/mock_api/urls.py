@@ -8,5 +8,6 @@ urlpatterns = [
     path('api/v1/User/Auth', MockInsuranceQuoteView.as_view(), {'action': 'auth'}, name='mock-auth'),
     path('api/v1/Insurance/GenerateQuote', MockInsuranceQuoteView.as_view(), {'action': 'quote'}, name='mock-generate-quote'),
     path('api/v1/Insurance/ChooseScheme', MockInsuranceQuoteView.as_view(), {'action': 'choose'}, name='mock-choose-scheme'),
+    path('api/v1/Insurance/GetPaymentInfo', MockInsuranceQuoteView.as_view(), {'action': 'policy'}, name='mock-get-policy'),
     # Standardized API endpoints for mock providers
 ]

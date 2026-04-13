@@ -275,22 +275,51 @@ class DICMultiStepFlowTestCase(TestCase):
             # Auth
             MagicMock(status_code=200, json=lambda: {"status": 1, "data": "MOCK_JWT_TOKEN_123456789"}),
             # Generate Quote
-            MagicMock(status_code=200, json=lambda: [{
-                "prodCode": "1001",
-                "prodName": "Comprehensive Gold",
-                "sumInsured": 244871,
-                "covers": {"mandatory": ["Agency Repair"], "optional": ["Roadside"]}
-            }]),
+            MagicMock(status_code=200, json=lambda: {
+                "statusId": "8006",
+                "status": 1,
+                "statusCategory": "OK",
+                "message": {
+                    "en": "8006:Quotation Created Successfully",
+                    "ar": "8006:تم إنشاء عرض الأسعار بنجاح"
+                },
+                "data": [{
+                    "prodCode": "1001",
+                    "prodName": "Comprehensive Gold",
+                    "sumInsured": 244871,
+                    "premium": 4409.6,
+                    "covers": {"mandatory": ["Agency Repair"], "optional": ["Roadside"]}
+                }]
+            }),
             # Choose Scheme
             MagicMock(status_code=200, json=lambda: {
-                "quotationNo": "QUO-1001-999",
-                "paymentUrl": "http://mock-payment"
+                "statusId": "8106",
+                "status": 1,
+                "statusCategory": "OK",
+                "message": {
+                    "en": "8106:Tariff calculated successfully.",
+                    "ar": "8106:تم احتساب التعريفة بنجاح."
+                },
+                "data": {
+                    "quotationNo": "QUO-1001-999",
+                    "paymentUrl": "http://mock-payment",
+                    "netPremium": 1100
+                }
             })
         ]
         mock_get.return_value = MagicMock(status_code=200, json=lambda: {
-            "polNo": "P123",
-            "polStatus": "APPROVED",
-            "paymentStatus": "S"
+            "statusId": "8201",
+            "status": 1,
+            "statusCategory": "OK",
+            "message": {
+                "en": "8201:The policy has been generated successfully.",
+                "ar": "8201:تم إنشاء السياسة بنجاح."
+            },
+            "data": {
+                "polNo": "P123",
+                "polStatus": "APPROVED",
+                "paymentStatus": "S"
+            }
         })
 
         # 1. Auth
@@ -304,12 +333,18 @@ class DICMultiStepFlowTestCase(TestCase):
         self.assertEqual(quote['prod_code'], '1001')
         self.assertEqual(quote['plan_name'], 'Comprehensive Gold')
         self.assertGreater(len(quote['benefits']), 0)
+        self.assertEqual(quote['premium'], 4409.6)
 
         # 3. Choose Scheme
         scheme = self.provider.choose_scheme('1001')
         self.assertIsNotNone(scheme)
         self.assertIn('paymentUrl', scheme)
         self.assertEqual(scheme['quotationNo'], 'QUO-1001-999')
+        self.assertEqual(scheme['netPremium'], 1100)
 
         # 4. Get Policy
         policy = self.provider.get_policy('QUO-1001-999')
+        self.assertIsNotNone(policy)
+        self.assertEqual(policy.get('polNo'), 'P123')
+        self.assertEqual(policy.get('polStatus'), 'APPROVED')
+        self.assertEqual(policy.get('paymentStatus'), 'S')

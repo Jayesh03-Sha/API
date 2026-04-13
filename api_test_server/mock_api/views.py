@@ -46,45 +46,128 @@ class MockInsuranceQuoteView(APIView):
         return JsonResponse({"status": 0, "error": "Invalid login"}, status=status.HTTP_401_UNAUTHORIZED)
 
     def _handle_generate_quote(self, request):
-        # Path to dic_motor_plans.json
         file_path = os.path.join(settings.BASE_DIR.parent, 'API_MOCK_DATA', 'JSON', 'dic_motor_plans.json')
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-            
-            # Convert internal format to the "realtime" format expected by the user
+
             realtime_plans = []
             for plan in data.get('plans', []):
                 realtime_plans.append({
                     "prodCode": plan.get('prodCode', '1001'),
-                    "prodName": plan.get('plan_name'),
-                    "sumInsured": plan.get('sumInsured', plan.get('coverage')),
+                    "prodName": {
+                        "en": plan.get('plan_name'),
+                        "ar": plan.get('plan_name')
+                    },
+                    "sumInsured": plan.get('sumInsured', plan.get('coverage', 0)),
+                    "premium": plan.get('premium', 0),
                     "covers": {
-                        "mandatory": plan.get('benefits', [])[:2],
-                        "optional": plan.get('benefits', [])[2:]
+                        "mandatory": [
+                            {
+                                "coverCode": "10001",
+                                "coverName": {
+                                    "en": "Loss or Damage for Vehicle",
+                                    "ar": "Loss or Damage for Vehicle"
+                                },
+                                "premium": 4409.6
+                            },
+                            {
+                                "coverCode": "15001",
+                                "coverName": {
+                                    "en": "Third Party Bodily Injury",
+                                    "ar": "Third Party Bodily Injury"
+                                },
+                                "premium": 1100
+                            }
+                        ],
+                        "optional": [
+                            {
+                                "coverCode": "10002",
+                                "coverName": {
+                                    "en": "PAB to Driver",
+                                    "ar": "PAB to Driver"
+                                },
+                                "premium": 120
+                            }
+                        ]
                     }
                 })
-            return JsonResponse(realtime_plans, safe=False, status=status.HTTP_200_OK)
+
+            return JsonResponse({
+                "statusId": "8006",
+                "status": 1,
+                "statusCategory": "OK",
+                "message": {
+                    "en": "8006:Quotation Created Successfully",
+                    "ar": "8006:تم إنشاء عرض الأسعار بنجاح"
+                },
+                "data": realtime_plans
+            }, status=status.HTTP_200_OK)
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({
+                "statusId": "-1",
+                "status": 0,
+                "statusCategory": "InternalServerError",
+                "message": {
+                    "en": "Unable to generate quote",
+                    "ar": "Unable to generate quote"
+                },
+                "data": None,
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def _handle_choose_scheme(self, request):
         prod_code = request.data.get('prodCode')
         return JsonResponse({
-            "quotationNo": f"QUO-{prod_code}-999",
-            "grossPremium": 1100,
-            "vat": 55,
-            "netToCustomer": 1155,
-            "paymentUrl": "http://localhost:8000/mock-api/payment-gateway/?q=QUO-999"
+            "statusId": "8106",
+            "status": 1,
+            "statusCategory": "OK",
+            "message": {
+                "en": "8106:Tariff calculated successfully.",
+                "ar": "8106:تم احتساب التعريفة بنجاح."
+            },
+            "data": {
+                "quotationNo": f"PQ/13/3/{prod_code}/2025/796261",
+                "sumInsured": 244871,
+                "grossPremium": 1100,
+                "discount": 0,
+                "netPremium": 1100,
+                "vat": 55,
+                "netToCustomer": 1155,
+                "excess": 0,
+                "scheme": f"{prod_code} - Motor Third Party Liability",
+                "paymentUrl": "http://localhost:8000/mock-api/payment-gateway/?q=QUO-999",
+                "covers": request.data.get('covers', {"mandatory": [], "optional": []})
+            }
         }, status=status.HTTP_200_OK)
 
     def _handle_get_policy(self, request):
+        quotation_no = request.query_params.get('quotationNo') or request.data.get('quotation_no')
         return JsonResponse({
-            "polNo": "P/13/1001/25/020/00001",
-            "polStatus": "APPROVED",
-            "paymentStatus": "S",
-            "grossPremium": "1955",
-            "documents": "BASE64_MOCK_PDF_CONTENT"
+            "statusId": "8201",
+            "status": 1,
+            "statusCategory": "OK",
+            "message": {
+                "en": "8201:The policy has been generated successfully.",
+                "ar": "8201:تم إنشاء السياسة بنجاح."
+            },
+            "data": {
+                "polNo": "P/13/1001/25/020/00001",
+                "polStatus": "APPROVED",
+                "paymentStatus": "S",
+                "scheme": "1231 - Comprehensive Gold",
+                "siCurr": "AED",
+                "sumInsured": "44506",
+                "premCurr": "AED",
+                "grossPremium": "1955",
+                "discount": "0",
+                "netPremium": "1955",
+                "vatPerc": "5",
+                "vat": "97.75",
+                "payable": "2052.75",
+                "excess": "",
+                "documents": "BASE64_MOCK_PDF_CONTENT"
+            }
         }, status=status.HTTP_200_OK)
 
     def _handle_legacy_quote(self, request, provider_code, requested_format):
