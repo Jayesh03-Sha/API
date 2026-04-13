@@ -3,7 +3,7 @@ services:
     name: promise-insure-api
     env: python
     buildCommand: ./build.sh
-    startCommand: gunicorn api_test_server.wsgi:application
+    startCommand: bash ./start.sh
     envVars:
       - key: DATABASE_URL
         fromDatabase:
