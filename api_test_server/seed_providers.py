@@ -10,7 +10,7 @@ from api_set1.models import InsuranceProvider
 def seed_providers():
     dic_api_base_url = os.environ.get('DIC_API_BASE_URL', 'http://localhost:8000/mock-api/')
     dic_api_key = os.environ.get('DIC_API_KEY', 'dic_uae_test_key_001')
-    qic_api_base_url = os.environ.get('QIC_API_BASE_URL', 'http://localhost:8000/mock-api/qic-uae/')
+    qic_api_base_url = os.environ.get('QIC_API_BASE_URL', 'http://localhost:8000/mock-api/')
     qic_api_key = os.environ.get('QIC_API_KEY', 'qic_uae_test_key_002')
     nia_api_base_url = os.environ.get('NIA_API_BASE_URL', 'http://localhost:8000/mock-api/nia/')
     nia_api_key = os.environ.get('NIA_API_KEY', 'nia_uae_test_key_003')

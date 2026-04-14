@@ -3,6 +3,8 @@ from .views import MockInsuranceQuoteView
 
 urlpatterns = [
     path('<str:provider_code>/quotes/', MockInsuranceQuoteView.as_view(), name='mock-provider-quotes'),
+    path('qic-uae/qicservices/aggregator/<path:action>/', MockInsuranceQuoteView.as_view(), {'provider_code': 'qic-uae'}, name='mock-qic-aggregator'),
+    path('qicservices/aggregator/<path:action>/', MockInsuranceQuoteView.as_view(), name='mock-qic-aggregator-root'),
     
     # New Standardized API Endpoints for Realtime Simulation
     path('api/v1/User/Auth', MockInsuranceQuoteView.as_view(), {'action': 'auth'}, name='mock-auth'),

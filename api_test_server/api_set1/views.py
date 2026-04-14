@@ -205,7 +205,8 @@ class GetQuotesView(APIView):
                 'sum_insured': float(quote_request.sum_insured),
                 'city': quote_request.city,
                 'members': quote_request.members,
-                'insurance_type': quote_request.insurance_type
+                'insurance_type': quote_request.insurance_type,
+                'additional_details': quote_request.additional_details or {}
             }
             
             logger.info(f"Fetching quotes for user {request.user.username} - {quote_request.insurance_type}")

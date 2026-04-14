@@ -26,7 +26,9 @@ class MockInsuranceQuoteView(APIView):
             return self._handle_choose_scheme(request)
         elif action == 'policy':
             return self._handle_get_policy(request)
-        
+        elif action in ['motor/tariff', 'motor/netPremium', 'sendPayLink', 'getLeadPolList']:
+            return self._handle_qic_request(request, action)
+
         # Fallback to existing logic for provider quote requests
         if provider_code:
             return self._handle_legacy_quote(request, provider_code, requested_format)
@@ -36,6 +38,8 @@ class MockInsuranceQuoteView(APIView):
     def get(self, request, provider_code=None, action=None):
         if action == 'policy':
             return self._handle_get_policy(request)
+        if action in ['getQuoteSchedule', 'getPolicyReport']:
+            return self._handle_qic_document(request, action)
         return JsonResponse({"error": "Unsupported method"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def _handle_auth(self, request):
@@ -168,6 +172,96 @@ class MockInsuranceQuoteView(APIView):
                 "excess": "",
                 "documents": "BASE64_MOCK_PDF_CONTENT"
             }
+        }, status=status.HTTP_200_OK)
+
+    def _handle_qic_request(self, request, action):
+        if action == 'motor/tariff':
+            return self._handle_qic_motor_tariff(request)
+        if action == 'motor/netPremium':
+            return self._handle_qic_net_premium(request)
+        if action == 'sendPayLink':
+            return self._handle_qic_send_paylink(request)
+        if action == 'getLeadPolList':
+            return self._handle_qic_lead_pol_list(request)
+        return JsonResponse({"status": 0, "message": "Unsupported QIC action"}, status=status.HTTP_400_BAD_REQUEST)
+
+    def _handle_qic_document(self, request, action):
+        if action == 'getQuoteSchedule':
+            return JsonResponse({
+                "status": 1,
+                "quoteNo": request.query_params.get('quoteNo'),
+                "documentUrl": "http://localhost:8000/mock-api/qic-quote-schedule.pdf",
+                "documentType": request.query_params.get('docType', 'pdf')
+            }, status=status.HTTP_200_OK)
+        if action == 'getPolicyReport':
+            return JsonResponse({
+                "status": 1,
+                "policyNo": request.query_params.get('policyNo'),
+                "reportUrl": "http://localhost:8000/mock-api/qic-policy-report.pdf",
+                "documentType": request.query_params.get('docType', 'pdf')
+            }, status=status.HTTP_200_OK)
+        return JsonResponse({"status": 0, "message": "Unsupported QIC document action"}, status=status.HTTP_400_BAD_REQUEST)
+
+    def _handle_qic_motor_tariff(self, request):
+        quote_no = "QIC-AN-0001"
+        return JsonResponse({
+            "respCode": 0,
+            "respMessage": "Success",
+            "quoteNo": quote_no,
+            "sumInsured": 500000,
+            "schemes": [
+                {
+                    "productCode": "ANOU-1001",
+                    "schemeCode": "COMPREHENSIVE",
+                    "schemeName": "Anoud Comprehensive",
+                    "netPremium": 2100.00,
+                    "basicCovers": [
+                        {"code": "BC100", "name": "Own Damage", "nameAr": "ضرر ذاتي", "premium": 1500.00},
+                        {"code": "BC200", "name": "Third Party Liability", "nameAr": "مسؤولية الطرف الثالث", "premium": 400.00}
+                    ],
+                    "inclusiveCovers": [
+                        {"code": "IC100", "name": "Fire & Theft", "nameAr": "حريق وسرقة", "premium": 100.00}
+                    ],
+                    "optionalCovers": [
+                        {"code": "OC100", "name": "Personal Accident", "nameAr": "حوادث شخصية", "premium": 100.00}
+                    ],
+                    "excessCovers": [],
+                    "discountCovers": [],
+                    "serviceTax": 105.00
+                }
+            ]
+        }, status=status.HTTP_200_OK)
+
+    def _handle_qic_net_premium(self, request):
+        return JsonResponse({
+            "respCode": 0,
+            "respMessage": "Net premium calculated successfully",
+            "quoteNo": request.data.get('quoteNo'),
+            "prodCode": request.data.get('prodCode'),
+            "schemeCode": request.data.get('schemeCode'),
+            "netPremium": 2150.00,
+            "vat": 107.50,
+            "totalPremium": 2257.50
+        }, status=status.HTTP_200_OK)
+
+    def _handle_qic_send_paylink(self, request):
+        return JsonResponse({
+            "respCode": 0,
+            "respMessage": "Pay link generated successfully",
+            "payLink": "http://localhost:8000/pay?q=QIC-AN-0001"
+        }, status=status.HTTP_200_OK)
+
+    def _handle_qic_lead_pol_list(self, request):
+        return JsonResponse({
+            "respCode": 0,
+            "respMessage": "Lead policy list retrieved",
+            "leadPolicies": [
+                {
+                    "policyNo": "AN-2025-001",
+                    "status": "ACTIVE",
+                    "insuredName": request.data.get('insuredName', 'Test User')
+                }
+            ]
         }, status=status.HTTP_200_OK)
 
     def _handle_legacy_quote(self, request, provider_code, requested_format):
